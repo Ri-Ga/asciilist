@@ -1,6 +1,6 @@
 % \iffalse meta-comment
 %
-% Copyright (C) 2014-2015 by Richard Gay <gay@mais.informatik.tu-darmstadt.de>
+% Copyright (C) 2014-2016 by Richard Gay <gay@mais.informatik.tu-darmstadt.de>
 % -------------------------------------------------------
 % 
 % This file may be distributed and/or modified under the
@@ -22,7 +22,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{asciilist}
 %<*package>
-    [2015/11/13 v2.0 Package for quickly creating nested lists]
+    [2016/02/23 v2.0a Package for quickly creating nested lists]
 %</package>
 %
 %<*driver>
@@ -81,10 +81,13 @@
 % \GetFileInfo{asciilist.dtx}
 %
 % \DoNotIndex{\newcommand,\newenvironment,\def,\gdef,\edef}
-% 
+%
 %
 % \title{The \textsf{asciilist} package\thanks{This document
-%   corresponds to \textsf{asciilist}~\fileversion, dated \filedate.}}
+%   corresponds to \textsf{asciilist}~\fileversion, dated \filedate.
+%   The package is available online at
+%   \url{http://www.ctan.org/pkg/asciilist} and
+%   \url{https://github.com/Ri-Ga/asciilist}.}}
 % \author{Richard Gay \\ \texttt{gay@mais.informatik.tu-darmstadt.de}}
 %
 % \maketitle
@@ -553,8 +556,9 @@
 %    \end{macrocode}
 % Ensure that the scanning for an item char starts with the very first
 % line of the environment.
+% \changes{v2.0a}{2016/02/23}{Improved first-line handling.}
 %    \begin{macrocode}
-  \asclst@newline%
+  \asclst@ifnextnewline{}{\asclst@newline}%
 }{%
 %    \end{macrocode}
 % Ensure that all remaining open list environments are closed before
@@ -700,6 +704,17 @@
     \fi\asclst@@do}%
 %    \end{macrocode}
 % \end{macro}
+%
+% \begin{macro}{\asclst@ifnextnewline}
+% The |\asclst@ifnextnewline|\marg{iftrue}\marg{iffalse} macro checks
+% whether the next character is a newline. If the check succeeds, then
+% the macro expands to \meta{iftrue}. Otherwise, the macro expands to
+% \meta{iffalse}.
+%    \begin{macrocode}
+  \gdef\asclst@ifnextnewline{\@ifnextchar^^M}
+%    \end{macrocode}
+% \end{macro}
+%
 % The following ends the group with active line break catcode.
 %    \begin{macrocode}
 }
@@ -854,8 +869,9 @@
 %    \end{macrocode}
 % Ensure that the scanning for an item char starts with the very first
 % line of the environment.
+% \changes{v2.0a}{2016/02/23}{Improved first-line handling.}
 %    \begin{macrocode}
-  \asclst@docnewline%
+  \asclst@ifnextnewline{}{\asclst@docnewline}%
 }{%
 %    \end{macrocode}
 % Ensure that all remaining open list environments are closed before the
