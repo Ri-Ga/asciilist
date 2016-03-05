@@ -22,7 +22,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{asciilist}
 %<*package>
-    [2016/02/23 v2.0a Package for quickly creating nested lists]
+    [2016/03/05 v2.1 Package for quickly creating nested lists]
 %</package>
 %
 %<*driver>
@@ -110,7 +110,7 @@
 % mapping between these characters and list levels is fixed for the
 % whole list.
 %
-% The |AsciiDocList| environment (Section~\ref{sec:AsciiListStar})
+% The |AsciiDocList| environment (Section~\ref{sec:AsciiDocList})
 % provides a list environment in which a sequence of characters at the
 % beginning of a line can be used to typeset an item at a particular
 % list level. The mapping between individual characters and list
@@ -213,7 +213,7 @@
 % \end{AsciiList}
 % \end{LTXexample}
 %
-% \subsubsection{Automatic item detection}
+% \subsubsection{Automatic Item Detection}
 %
 % If you want to be more flexible regarding the characters for the
 % list items, you can use |auto| as the parameter to the environment.
@@ -239,8 +239,34 @@
 % \end{AsciiList}
 % \end{LTXexample}
 %
+% \subsubsection{Navigating Upwards}
+% \changes{v2.1}{2016/03/05}{Documentation of \cs{UP} and \cs{UPTO}}
 %
-% \subsection{Lists with AsciiDoc-Like Notation}\label{sec:AsciiListStar}
+% If you want to typeset a list in which a list item is continued after
+% sub-items of that item, you can use the |\UP| and |\UPTO| macros.
+% \DescribeMacro{\UP}
+% The |\UP|\oarg{N} macro goes back \meta{N} levels (default: 1) without
+% starting a new item at the resulting level.
+% \DescribeMacro{\UPTO}
+% The |\UPTO|\marg{N} macro goes back to level \meta{N} (where the
+% topmost level is 0) without starting a new item at the resulting
+% level.
+% The following example illustrates the use of the two macros.
+% \begin{LTXexample}
+% \begin{AsciiList}{auto}
+%  - first item
+%    * sub-item
+%    \UP[1]
+%    continuation one level higher
+%    * another sub-item
+%      + a sub-sub-item
+%    \UPTO{1}
+%    continuation on first-item level
+% \end{AsciiList}
+% \end{LTXexample}
+%
+%
+% \subsection{Lists with AsciiDoc-Like Notation}\label{sec:AsciiDocList}
 %
 % \DescribeEnv{AsciiDocList}
 % Use the |AsciiDocList|\oarg{environments} environment to quickly create
@@ -317,6 +343,26 @@
 % \end{AsciiDocList}
 % \end{LTXexample}
 % \RestoreSecs
+%
+% \subsubsection{Navigating Upwards}
+% \changes{v2.1}{2016/03/05}{Documentation of \cs{UPTO}}
+%
+% If you want to typeset a list in which a list item is continued after
+% sub-items of that item, you can use the |\UPTO| macro.
+% \DescribeMacro{\UPTO}
+% The |\UPTO|\marg{chars} macro goes back the level identified by
+% \meta{chars} without starting a new item at the resulting level.
+% The following example illustrates the use of the macro.
+% \begin{LTXexample}
+% \begin{AsciiDocList}
+%  ; description
+%    beginning of description
+%    ;+ item
+%      ;+* sub-item
+%    \UPTO{;}
+%    continuation of description
+% \end{AsciiDocList}
+% \end{LTXexample}
 %
 %
 % \section{Customizing List Environments}\label{sec:config}
@@ -866,6 +912,12 @@
   \ifstrempty{#1}%
     {\expandafter\docsvlist\expandafter{\asclst@docdefaultenvs}}%
     {\docsvlist{#1}}%
+%    \end{macrocode}
+% And make the macro |\UPTO| available for switching to an upper level.
+% \changes{v2.1}{2016/03/04}{Add \cs{UPTO} to explicitly changle levels
+%                            upwards}
+%    \begin{macrocode}
+  \let\UPTO=\asclst@changedoclistlevel%
 %    \end{macrocode}
 % Ensure that the scanning for an item char starts with the very first
 % line of the environment.
