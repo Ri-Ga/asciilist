@@ -1,11 +1,11 @@
-The asciilist package
+The asciilist Package
 =====================
 
 Copyright (C) 2014-2016 Richard Gay
 
 Released under the [LaTeX Project Public License](http://www.latex-project.org/lppl/) version 1.2 or later
 
-# PURPOSE
+## Purpose
 
 This package provides the environments `AsciiList` and `AsciiDocList`,
 which enable quickly typesetting nested lists in LaTeX without having to
@@ -14,14 +14,15 @@ The package provides auxiliary functionality for loading such lists from
 files and provides macros for configuring the use of the list
 environments and the appearance of the typeset results.
 
-# AVAILABILITY
+## Availability
 
 The `asciilist` package is on [CTAN](http://www.ctan.org/pkg/asciilist),
-where you can also find the [documentation](http://mirrors.ctan.org/macros/latex/contrib/asciilist/asciilist.pdf).
+where you can also find the [documentation](http://mirrors.ctan.org/macros/latex/contrib/asciilist/asciilist.pdf),
+as well as on [github](https://github.com/Ri-Ga/asciilist).
 Since November 2015, `asciilist` is part of TeX Live (package `texlive-latex-extra`) and
 is included in [MiKTeX](http://miktex.org/packages/asciilist).
 
-# MANUAL INSTALLATION
+## Manual Installation
 
 The `asciilist` package comes with (at least) the following files
 * asciilist.ins
@@ -46,7 +47,7 @@ Put the resulting `asciilist.sty` somewhere where LaTeX can find it.
 Read the documentation of your LaTeX system to find out where this
 might be.
 
-# BUILDING DOCUMENTATION
+## Building Documentation
 
 To build the documentation of the `asciilist` package, you additionally
 need
