@@ -22,7 +22,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{asciilist}
 %<*package>
-    [2016/03/05 v2.1 Package for quickly creating nested lists]
+    [2016/03/31 v2.1b Package for quickly creating nested lists]
 %</package>
 %
 %<*driver>
@@ -212,6 +212,10 @@
 %  - item number 2.
 % \end{AsciiList}
 % \end{LTXexample}
+% Care has to be taken when the optional argument contains a comma. In
+% this case, the optional argument must be enclosed in parentheses such
+% that \LaTeX{} does not confuse the comma with a comma that separates
+% the list environments.
 %
 % \subsubsection{Automatic Item Detection}
 %
@@ -570,15 +574,18 @@
 % of environments to be used to create the lists at the individual
 % levels.
 % \changes{v1.2}{2014/09/18}{Allow auto-detection of item-chars}
+% \changes{v2.1b}{2016/03/31}{Eliminated expansion of optional argument}
 %    \begin{macrocode}
-\newenvironment{AsciiList}[2][\asclst@defaultenvs]{%
+\newenvironment{AsciiList}[2][]{%
   \bgroup
 %    \end{macrocode}
 % Setup the environment by storing the list \meta{environments} to use
 % and -- most importantly -- setting up the newline character such
 % that it scans for the \meta{item-chars} to find new list items.
 %    \begin{macrocode}
-  \edef\asclst@listenv{#1}%
+  \ifstrempty{#1}%
+    {\let\asclst@listenv=\asclst@defaultenvs}%
+    {\def\asclst@listenv{#1}}%
 %    \end{macrocode}
 % Convert the given \meta{item-chars} to an internal list of
 % \textsf{etoolbox}, because this makes working with the list easier.
@@ -622,7 +629,7 @@
 % but takes the content of the list from \meta{file-name}.
 % \changes{v1.8}{2015/08/19}{Added this macro}
 %    \begin{macrocode}
-\newcommand\AsciiListFromFile[3][\asclst@defaultenvs]{%
+\newcommand\AsciiListFromFile[3][]{%
   \AsciiList[#1]{#2}%
 %    \end{macrocode}
 % The following is a bit of a hack to ensure that there is some
@@ -647,7 +654,7 @@
 % \meta{file-list}.
 % \changes{v1.8b}{2015/08/24}{Added this macro}
 %    \begin{macrocode}
-\newcommand\AsciiListFromFiles[3][\asclst@defaultenvs]{%
+\newcommand\AsciiListFromFiles[3][]{%
   \AsciiList[#1]{#2}%
 %    \end{macrocode}
 % We do the same here as for the |\AsciiListFromFile| macro,
@@ -1275,7 +1282,7 @@
 % \changes{v1.8b}{2015/08/24}{Registered list environments can now be
 %                             loaded from files}
 %    \begin{macrocode}
-\newcommand*\NewAsciiListEnv[3][\asclst@defaultenvs]{%
+\newcommand*\NewAsciiListEnv[3][]{%
   \newenvironment{#3}%
     {\begin{AsciiList}[#1]{#2}}%
     {\end{AsciiList}}%
@@ -1366,10 +1373,12 @@
 % \changes{v1.6}{2014/10/12}{Robustified ignoring initial spaces}
 % \changes{v1.6b}{2014/10/14}{Robustified ignoring initial spaces}
 % \changes{v1.6c}{2014/10/16}{Robustified ignoring initial spaces}
+% \changes{v2.1b}{2016/03/31}{Robustified ignoring initial spaces}
 %    \begin{macrocode}
     \begingroup%
-    \protected@edef\asclst@@result{%
-      \endgroup\unexpanded{#1}{\trim@pre@space{#2}}}%
+    \def\asclst@@result{#2}\trim@pre@space@in{\asclst@@result}%
+    \edef\asclst@@result{%
+      \endgroup\unexpanded{#1}{\expandonce{\asclst@@result}}}%
     \asclst@@result
   }%
 %    \end{macrocode}
@@ -1383,11 +1392,13 @@
 % \changes{v1.6}{2014/10/12}{Robustified ignoring initial spaces}
 % \changes{v1.6b}{2014/10/14}{Robustified ignoring initial spaces}
 % \changes{v1.6c}{2014/10/16}{Robustified ignoring initial spaces}
+% \changes{v2.1b}{2016/03/31}{Robustified against nested square brackets}
 %    \begin{macrocode}
   \gdef\AsciiListEndOArg#1#2^^M{%
     \begingroup%
-    \protected@edef\asclst@@result{%
-      \endgroup\unexpanded{#1}[\trim@pre@space{#2}]}%
+    \def\asclst@@result{#2}\trim@pre@space@in{\asclst@@result}%
+    \edef\asclst@@result{%
+      \endgroup\unexpanded{#1}[{\expandonce{\asclst@@result}}]}%
     \asclst@@result
   }%
 }
@@ -1431,12 +1442,21 @@
 % \changes{v1.5b}{2014/09/24}{Added alternative description
 %                             environments}
 %    \begin{macrocode}
-\newcommand\asclst@BreakingDescItem[1][]{\item[#1]\leavevmode}
 \AsciiListRegisterEnv{Description}{\description}{\enddescription}%
                      {\AsciiListEndOArg{\asclst@BreakingDescItem}}
 \AsciiListRegisterEnv{CompactDesc}{\compactdesc}{\endcompactdesc}%
                      {\AsciiListEndOArg{\asclst@BreakingDescItem}}
 %    \end{macrocode}
+% \begin{macro}{\asclst@BreakingDescItem}
+% The |\asclst@BreakingDescItem|\oarg{item} macro is the same as
+% |\item[|\meta{item}|]| except that it is additionally ensured that
+% the first item of a contained list environment is not displayed on
+% the same line.
+% \changes{v2.1b}{2016/03/31}{Robustified against nested square brackets}
+%    \begin{macrocode}
+\newcommand\asclst@BreakingDescItem[1][]{\item[{#1}]\leavevmode}
+%    \end{macrocode}
+% \end{macro}
 %\iffalse
 %</package>
 %\fi
