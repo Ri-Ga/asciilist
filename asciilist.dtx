@@ -205,6 +205,18 @@
 %  - second section
 % \end{AsciiList}
 % \end{LTXexample}
+%
+% If you do not want to manually specify the nesting levels, you can
+% also use the list environment |Heading|\oarg{initial}, as the
+% following example demonstrates.\medskip
+% \begin{LTXexample}
+% \begin{AsciiList}[Heading<subsection>]{-,*,+}
+%  - a sub-section
+%    * a sub-sub-section
+%      + a paragraph
+%        and some text
+% \end{AsciiList}
+% \end{LTXexample}
 % \RestoreSecs
 %
 % List environments with optional parameters are also supported,
@@ -1448,6 +1460,41 @@
                      {\AsciiListEndArg{\subsubsection*}}
 \AsciiListRegisterEnv{paragraph}{}{}{\AsciiListEndArg{\paragraph}}
 %    \end{macrocode}
+% For nesting sections with sub-sections etc., the |Heading| environment
+% can be used.
+% \changes{v2.2}{2016/04/14}{Added ``Heading'' environment}
+%    \begin{macrocode}
+\AsciiListRegisterEnv{Heading}{\asclst@Heading}{\endasclst@Heading}%
+                     {\AsciiListEndArg{\csuse{\asclst@@sec}}}
+%    \end{macrocode}
+% \begin{environment}{asclst@Heading}
+% The |asclst@Heading|\oarg{initial} environment is an auxiliary
+% environment for the |Heading| list environment usable in |AsciiList|
+% and |AsciiDocList|. Inside the environment, one can use
+% |\csuse{\asclst@@sec}|\marg{title} to produce a heading at a
+% particular level. The initial level is provided by the optional
+% \meta{initial} argument. When the |asclst@Heading| environment is
+% nested, the heading level decreases (for instance, going from
+% ``section'' to ``subsection'').
+%    \begin{macrocode}
+\newenvironment{asclst@Heading}[1][section]%
+  {\bgroup\ifdefmacro{\asclst@@sec}%
+%    \end{macrocode}
+% If |\asclst@@sec| is already defined, use the |\asclst@Sec@...| macros
+% to determine the next sub-level (next line). Otherwise, initialize the
+% |\asclst@@sec| macro using the \meta{initial} argument.
+%    \begin{macrocode}
+    {\edef\asclst@@sec{\csuse{asclst@Sec@\asclst@@sec}}}%
+    {\def\asclst@@sec{#1}}}%
+  {\egroup}
+\newcommand\asclst@Sec@part{chapter}
+\newcommand\asclst@Sec@chapter{section}
+\newcommand\asclst@Sec@section{subsection}
+\newcommand\asclst@Sec@subsection{subsubsection}
+\newcommand\asclst@Sec@subsubsection{paragraph}
+\newcommand\asclst@Sec@paragraph{subparagraph}
+%    \end{macrocode}
+% \end{environment}
 % To simplify the use of the |description| environment as well as
 % other common description environments (the packages defining these
 % environments need not be loaded until the environments are actually
