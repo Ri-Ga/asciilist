@@ -22,7 +22,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{asciilist}
 %<*package>
-    [2016/03/31 v2.1b Package for quickly creating nested lists]
+    [2016/04/15 v2.2 Package for quickly creating nested lists]
 %</package>
 %
 %<*driver>
@@ -162,6 +162,15 @@
 % \end{LTXexample}
 % In the above example, the used input file has the following content:
 % \lstinputlisting{AsciiList.example}
+% Using |\input|, you can include the content of a file into an
+% |AsciiList| environment. The formatting of the environment is then
+% applied also to the content of the included file.
+% \begin{LTXexample}
+% \begin{AsciiList}{+,*,-}
+%   + main item
+%     \input{AsciiList.example}
+% \end{AsciiList}
+% \end{LTXexample}
 %
 % \DescribeMacro{\AsciiListFromFiles}
 % The |\AsciiListFromFiles| macro is the same as |\AsciiListFromFile|,
@@ -202,7 +211,7 @@
 % including their parameters. For instance, the |compactenum|
 % environment of the \textsf{paralist} package has an optional parameter
 % configuring the appearance of the individual items. The following
-% example shows how to specify the optional parameters:\par\null
+% example shows how to specify the optional parameters:\medskip
 % \begin{LTXexample}
 % \begin{AsciiList}[compactenum<1.>,
 %                   compactenum<(a)>]{auto}
@@ -317,6 +326,15 @@
 % \end{LTXexample}
 % In the above example, the used input file has the following content:
 % \lstinputlisting{AsciiDocList.example}
+% Using |\input|, you can include the content of a file into an
+% |AsciiDocList| environment. The formatting of the environment is then
+% applied also to the content of the included file.
+% \begin{LTXexample}
+% \begin{AsciiDocList}
+%   * first item
+%   \input{AsciiDocList.example}
+% \end{AsciiDocList}
+% \end{LTXexample}
 %
 % \DescribeMacro{\AsciiDocListFromFiles}
 % The |\AsciiDocListFromFiles| macro is the same as
@@ -596,6 +614,18 @@
     {\asclst@autocharsfalse\forcsvlist{\listadd\asclst@itemchars}{#2}}%
   \asclst@nlsetup\asclst@newline
 %    \end{macrocode}
+% We re-define |\input|\marg{filename} such that it becomes possible
+% to include |AsciiList|-formatted input files.
+%    \begin{macrocode}
+  \def\input##1{%
+%    \end{macrocode}
+% We input the file using the |\@@input| primitive, because this
+% primitive can be expanded via |\expandafter| such that the
+% |\asclst@newline| can parse the first line of the file already.
+%    \begin{macrocode}
+    \everyeof{\noexpand}%
+    \expandafter\asclst@newline\@@input##1\relax}%
+%    \end{macrocode}
 % Initialize to nesting level $0$. And make the macro |\UP| available
 % for switching to an upper level.
 % \changes{v1.5}{2014/09/21}{Avoid missing item error in empty
@@ -631,18 +661,7 @@
 %    \begin{macrocode}
 \newcommand\AsciiListFromFile[3][]{%
   \AsciiList[#1]{#2}%
-%    \end{macrocode}
-% The following is a bit of a hack to ensure that there is some
-% parameter to |\asclst@newline| even if the input file ends with
-% a newline.
-%    \begin{macrocode}
-  \everyeof{\relax}%
-%    \end{macrocode}
-% Now we input the file using the |\@@input| primitive, because this
-% primitive can be expanded via |\expandafter| such that the
-% |\asclst@newline| can parse the first line of the file already.
-%    \begin{macrocode}
-  \expandafter\asclst@newline\@@input #3\relax
+  \input{#3}%
   \endAsciiList}
 %    \end{macrocode}
 % \end{macro}
@@ -662,9 +681,7 @@
 % is to be avoided here, because there is quite some chance that
 % the |\do| macro gets redefined in the included code.
 %    \begin{macrocode}
-  \everyeof{\relax}%
-  \def\asclst@@load##1{\expandafter\asclst@newline\@@input ##1\relax}%
-  \forcsvlist{\asclst@@load}{#3}%
+  \forcsvlist{\input}{#3}%
   \endAsciiList}
 %    \end{macrocode}
 % \end{macro}
@@ -908,9 +925,21 @@
 %    \end{macrocode}
 % Modify the newline character to scan for characters that trigger
 % items.
+% \changes{v2.2}{2016/04/15}{Enabled \cs{input} in the macros and environments}
 %    \begin{macrocode}
   \def\asclst@curnestlvl{}%
   \asclst@nlsetup\asclst@docnewline%
+%    \end{macrocode}
+% We re-define |\input|\marg{filename} such that it becomes possible
+% to include |AsciiDocList|-formatted input files.
+%    \begin{macrocode}
+  \def\input##1{%
+%    \end{macrocode}
+% We input the file using the |\@@input| primitive, because this
+% primitive can be expanded via |\expandafter| such that the
+% |\asclst@docnewline| can parse the first line of the file already.
+%    \begin{macrocode}
+    \expandafter\asclst@docnewline\@@input##1\relax}%
 %    \end{macrocode}
 % Now setup the characters that trigger items.
 %    \begin{macrocode}
@@ -949,18 +978,7 @@
 %    \begin{macrocode}
 \newcommand\AsciiDocListFromFile[2][]{%
   \AsciiDocList[#1]%
-%    \end{macrocode}
-% The following is a bit of a hack to ensure that there is some
-% parameter to |\asclst@docnewline| even if the input file ends with
-% a newline.
-%    \begin{macrocode}
-  \everyeof{\relax}%
-%    \end{macrocode}
-% Now we input the file using the |\@@input| primitive, because this
-% primitive can be expanded via |\expandafter| such that the
-% |\asclst@docnewline| can parse the first line of the file already.
-%    \begin{macrocode}
-  \expandafter\asclst@docnewline\@@input #2\relax
+  \input{#2}%
   \endAsciiDocList}
 %    \end{macrocode}
 % \end{macro}
@@ -979,9 +997,7 @@
 % is to be avoided here, because there is quite some chance that
 % the |\do| macro gets redefined in the included code.
 %    \begin{macrocode}
-  \everyeof{\relax}%
-  \def\asclst@@load##1{\expandafter\asclst@docnewline\@@input##1\relax}%
-  \forcsvlist{\asclst@@load}{#2}%
+  \forcsvlist{\input}{#2}%
   \endAsciiDocList}
 %    \end{macrocode}
 % \end{macro}
@@ -1001,8 +1017,16 @@
 % newline character occurs in the |AsciiDocList| environment. The
 % \meta{first-char} then is the first character (or, rather, token)
 % after the newline.
+% \changes{v2.2}{2016/04/15}{Robustified file inputs against \cs{everyeof} changes}
 %    \begin{macrocode}
-  \gdef\asclst@docnewline{\asclst@docnewline@i{}}%
+  \gdef\asclst@docnewline{%
+%    \end{macrocode}
+% The following is a bit of a hack to ensure that there is some
+% parameter to |\asclst@docnewline| even if the input file ends with
+% a newline directly afterwards.
+%    \begin{macrocode}
+    \everyeof{\noexpand}%
+    \asclst@docnewline@i{}}%
 %    \end{macrocode}
 % \end{macro}
 % \begin{macro}{\asclst@docnewline@i}
