@@ -218,6 +218,8 @@
 % \end{AsciiList}
 % \end{LTXexample}
 % \RestoreSecs
+% The |Heading| list environment produces numbered sections.
+% Correspondingly, |Heading*| produces unnumbered sections.
 %
 % List environments with optional parameters are also supported,
 % including their parameters. For instance, the |compactenum|
@@ -1460,12 +1462,14 @@
                      {\AsciiListEndArg{\subsubsection*}}
 \AsciiListRegisterEnv{paragraph}{}{}{\AsciiListEndArg{\paragraph}}
 %    \end{macrocode}
-% For nesting sections with sub-sections etc., the |Heading| environment
-% can be used.
+% For nesting sections with sub-sections etc., the |Heading| and
+% |Heading*| environments can be used.
 % \changes{v2.2}{2016/04/14}{Added ``Heading'' environment}
 %    \begin{macrocode}
 \AsciiListRegisterEnv{Heading}{\asclst@Heading}{\endasclst@Heading}%
                      {\AsciiListEndArg{\csuse{\asclst@@sec}}}
+\AsciiListRegisterEnv{Heading*}{\asclst@Heading}{\endasclst@Heading}%
+                     {\AsciiListEndArg{\csuse{\asclst@@sec}*}}
 %    \end{macrocode}
 % \begin{environment}{asclst@Heading}
 % The |asclst@Heading|\oarg{initial} environment is an auxiliary
