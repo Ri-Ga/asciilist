@@ -1,7 +1,7 @@
 The asciilist Package
 =====================
 
-Copyright (C) 2014-2016 Richard Gay
+Copyright (C) 2014-2018 Richard Grewe
 
 Released under the [LaTeX Project Public License](http://www.latex-project.org/lppl/) version 1.2 or later
 
